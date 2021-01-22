@@ -3,6 +3,7 @@ import pygame
 # import our Paddle class
 from paddle import Paddle
 from ball import Ball
+from brick import Brick
 pygame.init()
 
 # define colors used
@@ -34,6 +35,29 @@ paddle.rect.y = 560
 ball = Ball(WHITE, 10, 10)
 ball.rect.xx = 345
 ball.rect.y = 195
+
+# create the brick sptites
+
+all_bricks = pygame.sprite.Group()
+for i in range(7):
+    brick = Brick(RED, 80, 30)
+    break.rect.x = 60 + i * 100
+    brick.rect.y = 60
+    all_sprites_list.add(brick)
+    all_bricks.add(brick)
+for i in range(7) :
+    brick = Brick(ORANGE, 80, 30)
+    break.rect.x = 60 + i * 100
+    brick.rect.y = 60
+    all_sprites_list.add(brick)
+    all_bricks.add(brick)
+for i in range(7) :
+    brick = Brick(YELLOW, 80, 30)
+    break.rect.x = 60 + i * 100
+    brick.rect.y = 60
+    all_sprites_list.add(brick)
+    all_bricks.add(brick)
+
 
 # add the paddle to the list of sprites
 all_sprites_list.add(paddle)
@@ -71,8 +95,43 @@ while run == True:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.y>590:
         ball.velocity[1] = -ball.velocity[1]
+        lives -= 1
+        if lives == 0:
+            # display game over message for 3 seconds
+            font = pygame.font.Font(None, 74)
+            text = font.render("GAME OVER", 1, WHITE)
+            pygame.display.flip()
+            pygame.time.wait(3000)
+
+            # stop game
+            run == False
+
+
     if ball.rect.y<40:
         ball.velocity[1] = -ball.velocity[1]
+
+    # detect collision between the ball and paddle
+    if pygame.sprite.collide_mask(ball, paddle):
+        ball.rect.x -= ball.velocity[0]
+        ball.rect.y -= ball.velocity[1]
+        ball.bounce()
+
+    # check if there is a car collision
+    brick_collision_list = pygame.sprite.spritecollide(ball, all_bricks, False)
+    for brick in brick_collision_list:
+        ball.bounce()
+        score += 1
+        brick.kill()
+        if len(all_bricks) == 0:
+            # display level complete message for 3 seconds
+            font = pygame.font.Font(None, 74)
+            text = font.render("LEVEL COMPLETE", 1, WHITE)
+            screen.blit(text, (200, 300))
+            pygame.display.flip()
+            pygame.time.wait(3000)
+
+            # stop game
+            run == False
 
     # drawing code
     # first clear screen

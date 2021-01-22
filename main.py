@@ -2,6 +2,7 @@
 import pygame
 # import our Paddle class
 from paddle import Paddle
+from ball import Ball
 pygame.init()
 
 # define colors used
@@ -29,9 +30,15 @@ paddle = Paddle(LIGHTBLUE, 100, 10)
 paddle.rect.x = 350
 paddle.rect.y = 560
 
+# create the ball
+ball = Ball(WHITE, 10, 10)
+ball.rect.xx = 345
+ball.rect.y = 195
+
 # add the paddle to the list of sprites
-all_sprites_list.add(paddle
-)
+all_sprites_list.add(paddle)
+all_sprites_list.add(ball)
+
 # run bool game will run until quit
 run = True
 
@@ -44,9 +51,28 @@ while run == True:
     for event in pygame.event.get(): # user did something
         if event.type == pygame.QUIT: # if user closes window
             run = False # exits loop
+        elif event.type==pygame.K_x: # pressing x quits game
+            run = False
+
+    # moving the when the user presses the arrow key
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        Paddle.moveLeft(5)
+    if keys[pygame.K_RIGHT]:
+        paddle.moveRight(5)
 
     # game logic
     all_sprites_list.update()
+
+    # check if the ball is bouncing against any of the walls
+    if ball.rect.x>= 790:
+        ball.velocity[0] = -ball.velocity[0]
+    if ball.rect.x<= 0:
+        ball.velocity[0] = -ball.velocity[0]
+    if ball.rect.y>590:
+        ball.velocity[1] = -ball.velocity[1]
+    if ball.rect.y<40:
+        ball.velocity[1] = -ball.velocity[1]
 
     # drawing code
     # first clear screen
